@@ -123,7 +123,7 @@ function editCh(n){
   document.getElementById('ccom').value=x.commercial_mode;document.getElementById('cen').value=x.enabled?'1':'0';
   document.getElementById('cfav').value=x.favorite?'1':'0';
   renderSrcRows(x.sources.map(s=>({type:s.source_type,value:s.source_value})));
-  document.getElementById('cheditTitle').textContent='EDIT CHANNEL '+x.number;
+  document.getElementById('cheditTitle').textContent=gettext('EDIT CHANNEL ')+x.number;
   document.getElementById('chmsg').textContent='';
   tab('ch');window.scrollTo(0,0);
 }
@@ -133,7 +133,7 @@ function newChannel(){
   document.getElementById('ccolor').value='#1a3a6b';document.getElementById('corder').value='shuffle';
   document.getElementById('ccom').value='between';document.getElementById('cen').value='1';document.getElementById('cfav').value='0';
   renderSrcRows([]);
-  document.getElementById('cheditTitle').textContent='ADD CHANNEL';
+  document.getElementById('cheditTitle').textContent=gettext('ADD CHANNEL');
   document.getElementById('chmsg').textContent='';
 }
 async function delCh(n){if(!confirm('Delete channel '+n+'?'))return;await fetch('/api/channel/'+n,{method:'DELETE'});loadCh();}
@@ -143,7 +143,7 @@ async function saveCh(){
     commercial_mode:document.getElementById('ccom').value,enabled:document.getElementById('cen').value==='1',
     favorite:document.getElementById('cfav').value==='1',sources:collectSources()};
   const r=await jpost('/api/channel',body);
-  document.getElementById('chmsg').textContent=r.ok?'Saved.':'Error';
+  document.getElementById('chmsg').textContent=r.ok?gettext('Saved.'):'Error';
   loadCh();
 }
 
@@ -229,10 +229,10 @@ async function loadSys(){const s=await jget('/api/system');document.getElementBy
   document.getElementById('streams').innerHTML=(s.sessions||[]).map(x=>`<div>${esc(x.id)} ch${x.channel}</div>`).join('')||'no browser sessions';}
 async function loadSets(){const r=await jget('/api/settings');document.getElementById('phoneBatteryThrottle').value=r.settings.phone_battery_throttle_enabled||'0';document.getElementById('sets').innerHTML=Object.entries(r.settings).filter(([k])=>!['phone_battery_throttle_enabled','transcode_worker','phone_adb_address'].includes(k)).map(([k,v])=>`<div class="kv"><label>${k}</label><input id="set-${k}" value="${esc(v)}"></div>`).join('');}
 async function loadPhoneTranscodeSettings(){const r=await jget('/api/transcode/config');if(!r.ok)return;document.getElementById('phoneAdbAddress').value=r.phone_address||'';document.getElementById('transcodeWorker').value=r.worker||'off';}
-function showPhoneTranscodeResult(r){const p=r.phone||{};const msg=document.getElementById('phoneTranscodeMessage');msg.textContent=!p.connected?'Phone unreachable over ADB. Check its address, Wi-Fi debugging, and pairing.':!p.installed?'Phone connected; FFmpeg is not installed on it.':!p.ready?'Phone connected; waiting for Android to cool.':r.screen_opened===false?'Phone connected; could not open the status screen.':'Phone connected and ready. The status screen is open on the phone.';}
-async function savePhoneTranscodeSettings(){const r=await jpost('/api/transcode/config',{phone_address:document.getElementById('phoneAdbAddress').value,worker:document.getElementById('transcodeWorker').value});if(!r.ok){document.getElementById('phoneTranscodeMessage').textContent=r.error||'Could not save phone settings';return;}document.getElementById('phoneAdbAddress').value=r.phone_address||'';if(r.phone)showPhoneTranscodeResult(r);else document.getElementById('phoneTranscodeMessage').textContent='Conversion worker saved.';loadTranscodeStatus();}
+function showPhoneTranscodeResult(r){const p=r.phone||{};const msg=document.getElementById('phoneTranscodeMessage');msg.textContent=!p.connected?gettext('Phone unreachable over ADB. Check its address, Wi-Fi debugging, and pairing.'):!p.installed?gettext('Phone connected; FFmpeg is not installed on it.'):!p.ready?gettext('Phone connected; waiting for Android to cool.'):r.screen_opened===false?gettext('Phone connected; could not open the status screen.'):gettext('Phone connected and ready. The status screen is open on the phone.');}
+async function savePhoneTranscodeSettings(){const r=await jpost('/api/transcode/config',{phone_address:document.getElementById('phoneAdbAddress').value,worker:document.getElementById('transcodeWorker').value});if(!r.ok){document.getElementById('phoneTranscodeMessage').textContent=r.error||gettext('Could not save phone settings');return;}document.getElementById('phoneAdbAddress').value=r.phone_address||'';if(r.phone)showPhoneTranscodeResult(r);else document.getElementById('phoneTranscodeMessage').textContent=gettext('Conversion worker saved.');loadTranscodeStatus();}
 async function testPhoneTranscodeConnection(){const r=await jpost('/api/transcode/phone/test',{});showPhoneTranscodeResult(r);loadTranscodeStatus();}
-async function saveSets(){const o={phone_battery_throttle_enabled:document.getElementById('phoneBatteryThrottle').value};document.querySelectorAll('#sets input').forEach(i=>o[i.id.slice(4)]=i.value);const r=await jpost('/api/settings',o);if(r.ok){loadTranscodeStatus();alert('Saved');}else alert(r.error||'Save failed');}
+async function saveSets(){const o={phone_battery_throttle_enabled:document.getElementById('phoneBatteryThrottle').value};document.querySelectorAll('#sets input').forEach(i=>o[i.id.slice(4)]=i.value);const r=await jpost('/api/settings',o);if(r.ok){loadTranscodeStatus();alert(gettext('Saved'));}else alert(r.error||'Save failed');}
 async function togglePhoneBatteryThrottle(){const s=await jget('/api/transcode/status');const enabled=!s.phone.battery_throttle_enabled;const r=await jpost('/api/settings',{phone_battery_throttle_enabled:enabled?'1':'0'});if(r.ok){loadTranscodeStatus();loadSets();}else alert(r.error||'Save failed');}
 async function loadLogs(){const r=await jget('/api/logs');document.getElementById('logs').textContent=(r.lines||[]).join('');}
 
