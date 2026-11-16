@@ -228,7 +228,7 @@ async function leagueRenderGame() {
       const row = document.createElement('div');
       row.className = `league-play${play.scoringPlay ? ' scoring' : ''}`;
       const clock = document.createElement('small');
-      clock.textContent = play.clock || play.time || play.period || 'PLAY';
+      clock.textContent = play.clock || play.time || play.period || gettext('PLAY');
       const body = document.createElement('span');
       body.textContent = play.text || '';
       row.append(clock, body);
@@ -285,7 +285,7 @@ function initLeagueBroadcast(league, timezone, channel) {
   leagueTvChannel = channel;
   const video = document.getElementById('v');
   video.muted = true;
-  document.getElementById('watchMute').textContent = 'UNMUTE';
+  document.getElementById('watchMute').textContent = gettext('UNMUTE');
   const switchGame = delta => {
     if (!leagueGames.length) return;
     leagueGameIndex = (leagueGameIndex + delta + leagueGames.length) % leagueGames.length;
